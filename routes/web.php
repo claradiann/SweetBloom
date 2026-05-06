@@ -49,6 +49,13 @@ Route::delete('/api/auth/account', [AuthController::class, 'deleteAccount'])
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
     ->middleware('auth:sanctum');
 
+Route::middleware('auth:sanctum')->group(function () {
+    // ... route yang sudah ada ...
+    Route::put('/api/auth/profile', [AuthController::class, 'updateProfile']);
+});
+
+Route::get('/api/products', [AuthController::class, 'getProducts']);
+
 
 // ── KONFIRMASI EMAIL (GET) ─────────────────────
 Route::get('/api/auth/confirm/{token}', [AuthController::class, 'confirmEmail']);
@@ -57,3 +64,8 @@ Route::get('/api/auth/confirm/{token}', [AuthController::class, 'confirmEmail'])
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
+
+//PRODUCT
+Route::get('/products', function () {
+    return view('products');
+})->name('products');

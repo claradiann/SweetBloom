@@ -310,17 +310,39 @@ class AuthController extends Controller
     }
 
     // ── Update Profile ────────────────────────────────────────
-public function updateProfile(Request $request): JsonResponse
+// Update profile (name, phone, address)
+public function updateProfile(Request $request)
 {
-    $name = trim($request->json('name', ''));
+    $user = $request->user();
 
-    if (!$name || strlen($name) < 2 || strlen($name) > 100) {
-        return response()->json(['success' => false, 'message' => 'Nama harus antara 2 sampai 100 karakter.'], 400);
+    $request->validate([
+        'name'    => 'sometimes|string|min:2|max:100',
+        'phone'   => 'sometimes|nullable|string|max:20',
+        'address' => 'sometimes|nullable|string|max:255',
+    ]);
+
+    $user->update($request->only('name', 'phone', 'address'));
+
+    return response()->json(['message' => 'Profil berhasil diperbarui.', 'user' => $user]);
+}
+
+// Get all products
+public function getProducts(Request $request)
+{
+    $category = $request->query('category');
+    $search   = $request->query('search');
+
+    $query = \App\Models\Product::where('is_available', true);
+
+    if ($category && $category !== 'all') {
+        $query->where('category', $category);
     }
 
-    $request->user()->update(['name' => $name]);
+    if ($search) {
+        $query->where('name', 'like', "%{$search}%");
+    }
 
-    return response()->json(['success' => true, 'message' => 'Profil berhasil diperbarui.']);
+    return response()->json(['products' => $query->orderBy('rating', 'desc')->get()]);
 }
 
 // ── Change Password ───────────────────────────────────────
@@ -362,4 +384,6 @@ public function deleteAccount(Request $request): JsonResponse
     return response()->json(['success' => true, 'message' => 'Akun berhasil dihapus.'])
         ->withoutCookie('token');
 }
+
+
 }

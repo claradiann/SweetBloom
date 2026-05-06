@@ -10,11 +10,11 @@
   <ul class="nav-links">
     <li><a href="#" class="active">Home</a></li>
     <li><a href="#menu">Menu</a></li>
-    <li><a href="#" onclick="showSection('profile')">Profile</a></li>
+    <li><a href="#">Profile</a></li>
   </ul>
   <div class="nav-actions">
     <button class="nav-cart">🛒 <span class="cart-badge">0</span></button>
-    <button class="nav-avatar" onclick="showSection('profile')" id="navAvatar">?</button>
+    <button class="nav-avatar" id="navAvatar">?</button>
   </div>
 </nav>
 
@@ -51,7 +51,7 @@
   <div class="section" id="menu">
     <div class="section-header">
       <h2 class="section-title">✨ Best Seller <span>Cakes</span></h2>
-      <a href="#" class="section-link">Lihat semua →</a>
+      <a href="/product" class="section-link" onclick="showAllProducts(); return false;">Lihat semua →</a>
     </div>
     <div class="products-grid">
       <div class="product-card">
@@ -146,3 +146,26 @@
         <li><a href="#" class="active" onclick="switchTab('info',this)">👤 Informasi Akun</a></li>
         <li><a href="#" onclick="switchTab('password',this)">🔑 Ubah Password</a></li>
         <li><a href="#" onclick="switchTab('orders',this)">📦 Pesanan Saya
+
+<!-- Cart Modal -->
+<div id="cartModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:24px;padding:32px;width:90%;max-width:420px;max-height:80vh;overflow-y:auto;position:relative;">
+    <button onclick="closeCart()" style="position:absolute;top:16px;right:20px;background:none;border:none;font-size:1.5rem;cursor:pointer;color:#aaa;">✕</button>
+    <h2 style="font-size:1.3rem;font-weight:800;margin-bottom:20px;">🛒 Keranjang Belanja</h2>
+    <div id="cartItems"></div>
+    <div id="cartTotal" style="margin-top:20px;padding-top:16px;border-top:1px solid #f8bbd0;font-weight:700;font-size:1.1rem;color:#e91e8c;"></div>
+    <button onclick="checkout()" id="checkoutBtn" style="width:100%;margin-top:16px;padding:14px;background:linear-gradient(135deg,#e91e8c,#f06292);color:#fff;border:none;border-radius:50px;font-weight:700;font-size:1rem;cursor:pointer;display:none;">Checkout 🎉</button>
+  </div>
+</div>
+
+<!-- Profile Modal -->
+<div id="profileModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:24px;padding:32px;width:90%;max-width:440px;max-height:90vh;overflow-y:auto;position:relative;">
+    <button onclick="closeProfileModal()" style="position:absolute;top:16px;right:20px;background:none;border:none;font-size:1.5rem;cursor:pointer;color:#aaa;">✕</button>
+    <div id="profileModalContent"></div>
+  </div>
+</div>
+
+<script>
+function checkout() { alert('Fitur checkout akan segera hadir! 🎉'); }
+</script>
