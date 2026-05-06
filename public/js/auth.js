@@ -148,39 +148,30 @@ function initLogin() {
   const success = getParam('success');
   const error   = getParam('error');
   const info    = getParam('info');
-  const msgMap  = {
-    confirmed:         'Akun berhasil dikonfirmasi! Silakan login. 🎉',
-    already_confirmed: 'Akun sudah dikonfirmasi sebelumnya. Silakan login.',
-  };
-  const errMap  = {
-    invalid_token: 'Link konfirmasi tidak valid atau sudah digunakan.',
-    token_expired: 'Link konfirmasi sudah kadaluarsa. Silakan daftar ulang.',
-    server_error:  'Terjadi kesalahan server. Coba lagi nanti.',
-  };
 
   form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  hideAlert('alertBox');
+    e.preventDefault();
+    hideAlert('alertBox');
 
-  const email    = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
 
-  if (!email || !password) {
-    return showAlert('alertBox', 'Email dan password wajib diisi.', 'error');
-  }
+    if (!email || !password) {
+      return showAlert('alertBox', 'Email dan password wajib diisi.', 'error');
+    }
 
-  setLoading('submitBtn', true);
-  const { ok, data } = await apiPost('/api/auth/login', { email, password });
-  setLoading('submitBtn', false);
+    setLoading('submitBtn', true);
+    const { ok, data } = await apiPost('/api/auth/login', { email, password });
+    setLoading('submitBtn', false);
 
-  if (ok) {
-    showAlert('alertBox', data.message, 'success');
-    if (data.user) sessionStorage.setItem('sb_user', JSON.stringify(data.user));
-    setTimeout(() => { window.location.href = '/dashboard.html'; }, 800);
-  } else {
-    showAlert('alertBox', data.message || 'Terjadi kesalahan.', 'error');
-  }
-});
+    if (ok) {
+      showAlert('alertBox', data.message, 'success');
+      if (data.user) sessionStorage.setItem('sb_user', JSON.stringify(data.user));
+      setTimeout(() => { window.location.href = '/dashboard'; }, 800);
+    } else {
+      showAlert('alertBox', data.message || 'Terjadi kesalahan.', 'error');
+    }
+  });
 }
 
 // ════════════════════════════════════════════════════════════
@@ -250,7 +241,7 @@ function initResetPassword() {
     if (ok) {
       showAlert('alertBox', data.message, 'success');
       form.reset();
-      setTimeout(() => { window.location.href = '/login.html'; }, 2000);
+      setTimeout(() => { window.location.href = '/login'; }, 2000);
     } else {
       showAlert('alertBox', data.message || 'Terjadi kesalahan.', 'error');
       if (data.code === 'TOKEN_EXPIRED') {
@@ -277,7 +268,7 @@ function initDashboard() {
       const data = await res.json();
 
       if (!res.ok) {
-        window.location.href = '/login.html';
+        window.location.href = '/login';
         return;
       }
 

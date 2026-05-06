@@ -226,7 +226,6 @@ async function loadUser() {
   }
 }
 
-// Profile Modal
 function openProfileModal() {
   const u = window._user;
   if (!u) return;
@@ -390,7 +389,6 @@ async function handleLogout() {
 
 function closeProfileModal() { document.getElementById('profileModal').style.display = 'none'; }
 
-// Event listeners
 document.addEventListener('DOMContentLoaded', () => {
   loadUser().then(() => {
     document.getElementById('navAvatar').addEventListener('click', openProfileModal);
@@ -399,7 +397,6 @@ document.addEventListener('DOMContentLoaded', () => {
   updateCartBadge();
 
   document.getElementById('navCart').addEventListener('click', openCart);
-
   document.getElementById('searchInput').addEventListener('input', filterAndSearch);
 
   document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -411,9 +408,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Tutup modal kalau klik backdrop
-  document.getElementById('cartModal').addEventListener('click', e => { if (e.target === document.getElementById('cartModal')) closeCart(); });
-  document.getElementById('profileModal').addEventListener('click', e => { if (e.target === document.getElementById('profileModal')) closeProfileModal(); });
+  document.getElementById('cartModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('cartModal')) closeCart();
+  });
+  document.getElementById('profileModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('profileModal')) closeProfileModal();
+  });
 });
 </script>
 

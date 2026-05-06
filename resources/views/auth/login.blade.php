@@ -258,6 +258,7 @@ async function handleLogin(e) {
   try {
     const res = await fetch('/api/auth/login', {
       method: 'POST',
+      credentials: 'include',          // ← tambah ini
       headers: {
         'Content-Type': 'application/json',
       },

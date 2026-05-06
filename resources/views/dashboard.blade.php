@@ -51,7 +51,7 @@
   <div class="section" id="menu">
     <div class="section-header">
       <h2 class="section-title">✨ Best Seller <span>Cakes</span></h2>
-      <a href="/product" class="section-link">Lihat semua →</a>
+      <a href="/products" class="section-link">Lihat semua →</a>
     </div>
     <div class="products-grid">
       <div class="product-card">
@@ -146,62 +146,52 @@
         <li><a href="#" class="active" onclick="switchTab('info',this);return false;">👤 Informasi Akun</a></li>
         <li><a href="#" onclick="switchTab('password',this);return false;">🔑 Ubah Password</a></li>
         <li><a href="#" onclick="switchTab('orders',this);return false;">📦 Pesanan Saya</a></li>
-        <li><a href="#" onclick="handleLogout();return false;" style="color:#e53935;">🚪 Logout</a></li>
       </ul>
     </aside>
 
-    <!-- Main Content -->
+    <!-- Main content -->
     <div class="profile-main">
       <div id="profileAlert" class="hidden"></div>
 
       <!-- Tab: Info -->
       <div id="tab-info">
         <h2 class="profile-section-title">👤 Informasi Akun</h2>
-        <div class="profile-form">
-          <div class="form-group">
-            <label>Nama Lengkap</label>
-            <input type="text" id="infoName" placeholder="Nama kamu">
-          </div>
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="infoEmail" placeholder="Email" disabled style="opacity:.6;cursor:not-allowed;">
-          </div>
-          <button class="btn-save" onclick="handleSaveInfo()">💾 Simpan Perubahan</button>
+        <div class="form-group">
+          <label class="form-label">Nama</label>
+          <input id="infoName" type="text" class="form-input" placeholder="Nama lengkap">
         </div>
-
-        <hr style="margin:40px 0;border:none;border-top:1px solid #fce4ec;">
-
-        <h3 style="font-size:1rem;font-weight:700;color:#e53935;margin-bottom:16px;">⚠️ Danger Zone</h3>
-        <button onclick="confirmDeleteAccount()" style="padding:12px 24px;background:#fff;color:#e53935;border:1.5px solid #ffcdd2;border-radius:50px;font-weight:700;cursor:pointer;">🗑️ Hapus Akun</button>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input id="infoEmail" type="email" class="form-input" disabled style="opacity:.6;cursor:not-allowed;">
+        </div>
+        <button onclick="handleSaveInfo()" class="btn-primary" style="margin-top:8px;">💾 Simpan Perubahan</button>
       </div>
 
       <!-- Tab: Password -->
       <div id="tab-password" style="display:none;">
         <h2 class="profile-section-title">🔑 Ubah Password</h2>
-        <div class="profile-form">
-          <div class="form-group">
-            <label>Password Saat Ini</label>
-            <div class="input-wrapper">
-              <input type="password" id="pwCurrent" placeholder="••••••••">
-              <button type="button" class="btn-eye">👁️</button>
-            </div>
+        <div class="form-group">
+          <label class="form-label">Password Saat Ini</label>
+          <div class="input-wrapper">
+            <input id="pwCurrent" type="password" class="form-input" placeholder="••••••••">
+            <button class="btn-eye" type="button">👁️</button>
           </div>
-          <div class="form-group">
-            <label>Password Baru</label>
-            <div class="input-wrapper">
-              <input type="password" id="pwNew" placeholder="Min. 8 karakter + angka">
-              <button type="button" class="btn-eye">👁️</button>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Konfirmasi Password Baru</label>
-            <div class="input-wrapper">
-              <input type="password" id="pwConfirm" placeholder="Ulangi password baru">
-              <button type="button" class="btn-eye">👁️</button>
-            </div>
-          </div>
-          <button class="btn-save" id="pwSubmitBtn" onclick="handleChangePassword()">🔒 Ubah Password</button>
         </div>
+        <div class="form-group">
+          <label class="form-label">Password Baru</label>
+          <div class="input-wrapper">
+            <input id="pwNew" type="password" class="form-input" placeholder="Min. 8 karakter + angka">
+            <button class="btn-eye" type="button">👁️</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Konfirmasi Password Baru</label>
+          <div class="input-wrapper">
+            <input id="pwConfirm" type="password" class="form-input" placeholder="Ulangi password baru">
+            <button class="btn-eye" type="button">👁️</button>
+          </div>
+        </div>
+        <button id="pwSubmitBtn" onclick="handleChangePassword()" class="btn-primary" style="margin-top:8px;">🔒 Ubah Password</button>
       </div>
 
       <!-- Tab: Orders -->
@@ -209,15 +199,34 @@
         <h2 class="profile-section-title">📦 Pesanan Saya</h2>
         <div style="text-align:center;padding:60px 0;color:#bbb;">
           <div style="font-size:3rem;margin-bottom:16px;">📦</div>
-          <div style="font-size:1.1rem;font-weight:600;">Belum ada pesanan</div>
-          <div style="font-size:.9rem;margin-top:8px;">Yuk, mulai belanja kue favoritmu!</div>
-          <button onclick="showSection('home')" style="margin-top:24px;padding:12px 32px;background:linear-gradient(135deg,#e91e8c,#f06292);color:#fff;border:none;border-radius:50px;font-weight:700;cursor:pointer;">Belanja Sekarang 🎂</button>
+          <div style="font-weight:600;">Belum ada pesanan</div>
+          <div style="font-size:.875rem;margin-top:8px;">Yuk mulai belanja kue favoritmu!</div>
         </div>
       </div>
 
-    </div><!-- end profile-main -->
-  </div><!-- end profile-layout -->
+      <!-- Danger Zone -->
+      <div style="margin-top:40px;padding:24px;border:1.5px solid #ffcdd2;border-radius:16px;background:#fff5f5;">
+        <div style="font-weight:700;color:#c62828;margin-bottom:8px;">⚠️ Danger Zone</div>
+        <p style="font-size:.875rem;color:#888;margin-bottom:16px;">Menghapus akun bersifat permanen dan tidak bisa dibatalkan.</p>
+        <button onclick="confirmDeleteAccount()" style="padding:10px 24px;background:#fff;color:#e53935;border:1.5px solid #ffcdd2;border-radius:50px;font-weight:700;cursor:pointer;">🗑️ Hapus Akun</button>
+      </div>
+    </div>
+
+  </div>
 </div><!-- end section-profile -->
+
+<!-- Delete Modal -->
+<div id="deleteModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:24px;padding:32px;width:90%;max-width:400px;text-align:center;">
+    <div style="font-size:3rem;margin-bottom:16px;">⚠️</div>
+    <h3 style="font-weight:800;margin-bottom:8px;">Hapus Akun?</h3>
+    <p style="color:#888;font-size:.9rem;margin-bottom:24px;">Tindakan ini permanen dan tidak bisa dibatalkan. Semua data kamu akan hilang.</p>
+    <div style="display:flex;gap:12px;">
+      <button onclick="closeDeleteModal()" style="flex:1;padding:12px;background:#f5f5f5;border:none;border-radius:50px;font-weight:700;cursor:pointer;">Batal</button>
+      <button id="deleteConfirmBtn" onclick="handleDeleteAccount()" style="flex:1;padding:12px;background:#e53935;color:#fff;border:none;border-radius:50px;font-weight:700;cursor:pointer;">Ya, Hapus Akun</button>
+    </div>
+  </div>
+</div>
 
 <!-- Cart Modal -->
 <div id="cartModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;">
@@ -238,19 +247,9 @@
   </div>
 </div>
 
-<!-- Delete Account Modal -->
-<div id="deleteModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:24px;padding:32px;width:90%;max-width:400px;text-align:center;">
-    <div style="font-size:3rem;margin-bottom:16px;">⚠️</div>
-    <h3 style="font-size:1.2rem;font-weight:800;margin-bottom:8px;">Hapus Akun?</h3>
-    <p style="color:#888;font-size:.9rem;margin-bottom:24px;">Tindakan ini tidak bisa dibatalkan. Semua data akun kamu akan dihapus permanen.</p>
-    <div style="display:flex;gap:12px;">
-      <button onclick="closeDeleteModal()" style="flex:1;padding:12px;background:#f5f5f5;border:none;border-radius:50px;font-weight:700;cursor:pointer;">Batal</button>
-      <button id="deleteConfirmBtn" onclick="handleDeleteAccount()" style="flex:1;padding:12px;background:#e53935;color:#fff;border:none;border-radius:50px;font-weight:700;cursor:pointer;">Ya, Hapus Akun</button>
-    </div>
-  </div>
-</div>
-
 <script src="/js/dashboard.js"></script>
+<script>
+function checkout() { alert('Fitur checkout akan segera hadir! 🎉'); }
+</script>
 
 @endsection
