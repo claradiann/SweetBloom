@@ -290,13 +290,3 @@ function initDashboard() {
   });
 }
 
-// ════════════════════════════════════════════════════════════
-//  AUTO-INIT
-// ════════════════════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', () => {
-  initRegister();
-  initLogin();
-  initForgotPassword();
-  initResetPassword();
-  initDashboard();
-});

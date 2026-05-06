@@ -307,7 +307,7 @@ function openProfileModal() {
       <div id="profileMsg" style="margin-bottom:12px;"></div>
       <button onclick="showEditProfile()" style="width:100%;padding:12px;background:linear-gradient(135deg,#e91e8c,#f06292);color:#fff;border:none;border-radius:50px;font-weight:700;cursor:pointer;margin-bottom:10px;">✏️ Edit Profil</button>
       <button onclick="showChangePassword()" style="width:100%;padding:12px;background:#fff;color:#e91e8c;border:1.5px solid #f8bbd0;border-radius:50px;font-weight:700;cursor:pointer;margin-bottom:10px;">🔒 Ubah Password</button>
-      <button onclick="handleLogout()" style="width:100%;padding:12px;background:#fff;color:#888;border:1.5px solid #eee;border-radius:50px;font-weight:700;cursor:pointer;margin-bottom:10px;">🚪 Logout</button>
+      <button onclick="handleLogout()" style="width:100%;padding:12px;background:#fff;color:#e91e8c;border:1.5px solid #f8bbd0;border-radius:50px;font-weight:700;cursor:pointer;margin-bottom:10px;">🚪 Logout</button>
       <button onclick="confirmDeleteAccount()" style="width:100%;padding:12px;background:#fff;color:#e53935;border:1.5px solid #ffcdd2;border-radius:50px;font-weight:700;cursor:pointer;">🗑️ Hapus Akun</button>
     </div>
   `;

@@ -15,7 +15,8 @@
   <div class="nav-actions">
     <button class="nav-cart">🛒 <span class="cart-badge">0</span></button>
     <button class="nav-avatar" id="navAvatar">?</button>
-  </div>
+    <button onclick="handleLogout()" style="background:none;border:1.5px solid #e8537a;color:#e8537a;padding:8px 18px;border-radius:50px;font-weight:700;font-size:0.85rem;cursor:pointer;">🚪 Logout</button>
+</div>
 </nav>
 
 <!-- HOME SECTION -->

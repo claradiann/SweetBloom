@@ -9,9 +9,9 @@ use App\Models\LoginLog;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class AuthController extends Controller
@@ -53,12 +53,11 @@ class AuthController extends Controller
         if ($confirmPassword !== null && $confirmPassword !== $password) {
             return response()->json(['success' => false, 'message' => 'Konfirmasi password tidak cocok.'], 400);
         }
-
         if (User::where('email', $email)->exists()) {
             return response()->json(['success' => false, 'message' => 'Email ini sudah terdaftar. Silakan login.'], 409);
         }
 
-       $user = User::create([
+        User::create([
             'name'         => $name,
             'email'        => $email,
             'password'     => Hash::make($password),
@@ -113,14 +112,13 @@ class AuthController extends Controller
 
         if (!$user) {
             $this->logLogin(null, $email, $request, 'failed');
-            Hash::make('dummy'); // cegah user enumeration
+            Hash::make('dummy');
             return response()->json(['success' => false, 'message' => 'Email atau password salah.'], 401);
         }
 
         // Cek dikunci
         if ($user->locked_until && Carbon::now()->lt($user->locked_until)) {
-            $remaining = Carbon::now()->diffInMinutes($user->locked_until, false) * -1;
-            $remaining = (int) ceil(abs($remaining));
+            $remaining = (int) ceil(abs(Carbon::now()->diffInMinutes($user->locked_until, false) * -1));
             $this->logLogin($user->id, $email, $request, 'locked');
             return response()->json([
                 'success' => false,
@@ -164,27 +162,38 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // Login berhasil
+        // Login berhasil - pakai session
         $user->update(['login_attempts' => 0, 'locked_until' => null]);
         $this->logLogin($user->id, $email, $request, 'success');
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        Auth::login($user, false);
+        $request->session()->regenerate();
 
         return response()->json([
             'success' => true,
             'message' => "Selamat datang kembali, {$user->name}! 🌸",
             'user'    => ['id' => $user->id, 'name' => $user->name, 'email' => $user->email, 'role' => $user->role],
-            'token'   => $token,
-        ])->cookie('token', $token, 60 * 24 * 7, '/', null, false, true);
+        ]);
     }
 
     // ── Logout ────────────────────────────────────────────────
     public function logout(Request $request): JsonResponse
     {
-        $request->user()?->currentAccessToken()?->delete();
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-        return response()->json(['success' => true, 'message' => 'Berhasil logout. Sampai jumpa! 👋'])
-            ->withoutCookie('token');
+        return response()->json(['success' => true, 'message' => 'Berhasil logout. Sampai jumpa! 👋']);
+    }
+
+    // ── Get Me ────────────────────────────────────────────────
+    public function me(Request $request): JsonResponse
+    {
+        $user = Auth::guard('web')->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+        return response()->json(['success' => true, 'user' => $user]);
     }
 
     // ── Resend Confirmation ───────────────────────────────────
@@ -289,12 +298,6 @@ class AuthController extends Controller
         ]);
     }
 
-    // ── Get Me ────────────────────────────────────────────────
-    public function me(Request $request): JsonResponse
-    {
-        return response()->json(['success' => true, 'user' => $request->user()]);
-    }
-
     // ── Helper: log login ─────────────────────────────────────
     private function logLogin(?int $userId, string $email, Request $request, string $status): void
     {
@@ -310,80 +313,80 @@ class AuthController extends Controller
     }
 
     // ── Update Profile ────────────────────────────────────────
-// Update profile (name, phone, address)
-public function updateProfile(Request $request)
-{
-    $user = $request->user();
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $user = Auth::guard('web')->user();
 
-    $request->validate([
-        'name'    => 'sometimes|string|min:2|max:100',
-        'phone'   => 'sometimes|nullable|string|max:20',
-        'address' => 'sometimes|nullable|string|max:255',
-    ]);
+        $request->validate([
+            'name'    => 'sometimes|string|min:2|max:100',
+            'phone'   => 'sometimes|nullable|string|max:20',
+            'address' => 'sometimes|nullable|string|max:255',
+        ]);
 
-    $user->update($request->only('name', 'phone', 'address'));
+        $user->update($request->only('name', 'phone', 'address'));
 
-    return response()->json(['message' => 'Profil berhasil diperbarui.', 'user' => $user]);
-}
-
-// Get all products
-public function getProducts(Request $request)
-{
-    $category = $request->query('category');
-    $search   = $request->query('search');
-
-    $query = \App\Models\Product::where('is_available', true);
-
-    if ($category && $category !== 'all') {
-        $query->where('category', $category);
+        return response()->json(['message' => 'Profil berhasil diperbarui.', 'user' => $user]);
     }
 
-    if ($search) {
-        $query->where('name', 'like', "%{$search}%");
+    // ── Get Products ──────────────────────────────────────────
+    public function getProducts(Request $request): JsonResponse
+    {
+        $category = $request->query('category');
+        $search   = $request->query('search');
+
+        $query = \App\Models\Product::where('is_available', true);
+
+        if ($category && $category !== 'all') {
+            $query->where('category', $category);
+        }
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        return response()->json(['products' => $query->orderBy('rating', 'desc')->get()]);
     }
 
-    return response()->json(['products' => $query->orderBy('rating', 'desc')->get()]);
-}
+    // ── Change Password ───────────────────────────────────────
+    public function changePassword(Request $request): JsonResponse
+    {
+        $data            = $request->json()->all();
+        $currentPassword = $data['currentPassword'] ?? '';
+        $newPassword     = $data['newPassword'] ?? '';
+        $confirmPassword = $data['confirmPassword'] ?? '';
 
-// ── Change Password ───────────────────────────────────────
-public function changePassword(Request $request): JsonResponse
-{
-    $data            = $request->json()->all();
-    $currentPassword = $data['currentPassword'] ?? '';
-    $newPassword     = $data['newPassword'] ?? '';
-    $confirmPassword = $data['confirmPassword'] ?? '';
+        $user = Auth::guard('web')->user();
 
-    if (!$currentPassword || !$newPassword || !$confirmPassword) {
-        return response()->json(['success' => false, 'message' => 'Semua field wajib diisi.'], 400);
+        if (!$currentPassword || !$newPassword || !$confirmPassword) {
+            return response()->json(['success' => false, 'message' => 'Semua field wajib diisi.'], 400);
+        }
+        if (!Hash::check($currentPassword, $user->password)) {
+            return response()->json(['success' => false, 'message' => 'Password saat ini tidak sesuai.'], 401);
+        }
+        if (strlen($newPassword) < 8) {
+            return response()->json(['success' => false, 'message' => 'Password baru minimal 8 karakter.'], 400);
+        }
+        if (!preg_match('/(?=.*[A-Za-z])(?=.*\d)/', $newPassword)) {
+            return response()->json(['success' => false, 'message' => 'Password harus mengandung huruf dan angka.'], 400);
+        }
+        if ($newPassword !== $confirmPassword) {
+            return response()->json(['success' => false, 'message' => 'Konfirmasi password tidak cocok.'], 400);
+        }
+
+        $user->update(['password' => Hash::make($newPassword)]);
+
+        return response()->json(['success' => true, 'message' => 'Password berhasil diubah!']);
     }
-    if (!Hash::check($currentPassword, $request->user()->password)) {
-        return response()->json(['success' => false, 'message' => 'Password saat ini tidak sesuai.'], 401);
+
+    // ── Delete Account ────────────────────────────────────────
+    public function deleteAccount(Request $request): JsonResponse
+    {
+        $user = Auth::guard('web')->user();
+        $user->tokens()->delete();
+        $user->delete();
+
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+
+        return response()->json(['success' => true, 'message' => 'Akun berhasil dihapus.']);
     }
-    if (strlen($newPassword) < 8) {
-        return response()->json(['success' => false, 'message' => 'Password baru minimal 8 karakter.'], 400);
-    }
-    if (!preg_match('/(?=.*[A-Za-z])(?=.*\d)/', $newPassword)) {
-        return response()->json(['success' => false, 'message' => 'Password harus mengandung huruf dan angka.'], 400);
-    }
-    if ($newPassword !== $confirmPassword) {
-        return response()->json(['success' => false, 'message' => 'Konfirmasi password tidak cocok.'], 400);
-    }
-
-    $request->user()->update(['password' => Hash::make($newPassword)]);
-
-    return response()->json(['success' => true, 'message' => 'Password berhasil diubah!']);
-}
-
-// ── Delete Account ────────────────────────────────────────
-public function deleteAccount(Request $request): JsonResponse
-{
-    $user = $request->user();
-    $user->tokens()->delete();
-    $user->delete();
-
-    return response()->json(['success' => true, 'message' => 'Akun berhasil dihapus.'])
-        ->withoutCookie('token');
-}
-
-
 }
