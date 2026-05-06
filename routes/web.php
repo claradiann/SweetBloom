@@ -26,12 +26,13 @@ Route::get('/reset-password', function () {
 })->name('reset-password');
 
 // ── AUTH API (POST) ───────────────────────────
-Route::post('/api/auth/register', [AuthController::class, 'register']);
-Route::post('/api/auth/login',    [AuthController::class, 'login']);
+Route::post('/api/auth/login', [AuthController::class, 'login'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+Route::post('/api/auth/register', [AuthController::class, 'register'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+Route::post('/api/auth/forgot-password', [AuthController::class, 'forgotPassword'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+Route::post('/api/auth/reset-password', [AuthController::class, 'resetPassword'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+Route::post('/api/auth/resend-confirmation', [AuthController::class, 'resendConfirmation'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 Route::post('/api/auth/logout',   [AuthController::class, 'logout']);
-Route::post('/api/auth/forgot-password',   [AuthController::class, 'forgotPassword']);
-Route::post('/api/auth/reset-password',    [AuthController::class, 'resetPassword']);
-Route::post('/api/auth/resend-confirmation', [AuthController::class, 'resendConfirmation']);
+
 
 // ── KONFIRMASI EMAIL (GET) ─────────────────────
 Route::get('/api/auth/confirm/{token}', [AuthController::class, 'confirmEmail']);

@@ -158,56 +158,29 @@ function initLogin() {
     server_error:  'Terjadi kesalahan server. Coba lagi nanti.',
   };
 
-  if (success && msgMap[success]) showAlert('alertBox', msgMap[success], 'success');
-  if (error   && errMap[error])   showAlert('alertBox', errMap[error],   'error');
-  if (info    && msgMap[info])    showAlert('alertBox', msgMap[info],    'info');
-
-  let resendSection = null;
-
   form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    hideAlert('alertBox');
-    if (resendSection) { resendSection.remove(); resendSection = null; }
+  e.preventDefault();
+  hideAlert('alertBox');
 
-    const email    = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
+  const email    = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
 
-    if (!email || !password) {
-      return showAlert('alertBox', 'Email dan password wajib diisi.', 'error');
-    }
+  if (!email || !password) {
+    return showAlert('alertBox', 'Email dan password wajib diisi.', 'error');
+  }
 
-    setLoading('submitBtn', true);
-    const { ok, data } = await apiPost('/api/auth/login', { email, password });
-    setLoading('submitBtn', false);
+  setLoading('submitBtn', true);
+  const { ok, data } = await apiPost('/api/auth/login', { email, password });
+  setLoading('submitBtn', false);
 
-    if (ok) {
-      showAlert('alertBox', data.message, 'success');
-      if (data.user) sessionStorage.setItem('sb_user', JSON.stringify(data.user));
-      setTimeout(() => { window.location.href = '/dashboard.html'; }, 800);
-    } else {
-      showAlert('alertBox', data.message || 'Terjadi kesalahan.', 'error');
-
-      if (data.code === 'NOT_CONFIRMED') {
-        resendSection = document.createElement('div');
-        resendSection.style.textAlign = 'center';
-        resendSection.style.marginTop = '12px';
-        resendSection.innerHTML = `
-          <p style="font-size:13px;color:var(--gray-500);margin-bottom:8px;">Belum dapat email konfirmasi?</p>
-          <button id="resendBtn" type="button"
-            style="background:none;border:none;color:var(--pink-600);font-weight:600;font-size:14px;cursor:pointer;text-decoration:underline;">
-            Kirim Ulang Email Konfirmasi
-          </button>`;
-        document.getElementById('alertBox').after(resendSection);
-
-        document.getElementById('resendBtn').addEventListener('click', async () => {
-          document.getElementById('resendBtn').disabled = true;
-          document.getElementById('resendBtn').textContent = 'Mengirim...';
-          const r = await apiPost('/api/auth/resend-confirmation', { email });
-          document.getElementById('resendBtn').textContent = r.data.message;
-        });
-      }
-    }
-  });
+  if (ok) {
+    showAlert('alertBox', data.message, 'success');
+    if (data.user) sessionStorage.setItem('sb_user', JSON.stringify(data.user));
+    setTimeout(() => { window.location.href = '/dashboard.html'; }, 800);
+  } else {
+    showAlert('alertBox', data.message || 'Terjadi kesalahan.', 'error');
+  }
+});
 }
 
 // ════════════════════════════════════════════════════════════
