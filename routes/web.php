@@ -26,38 +26,30 @@ Route::get('/reset-password', function () {
 })->name('reset-password');
 
 // ── AUTH API (POST) ───────────────────────────
-Route::post('/api/auth/login', [AuthController::class, 'login'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
-Route::post('/api/auth/register', [AuthController::class, 'register'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
-Route::post('/api/auth/forgot-password', [AuthController::class, 'forgotPassword'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
-Route::post('/api/auth/reset-password', [AuthController::class, 'resetPassword'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
-Route::post('/api/auth/resend-confirmation', [AuthController::class, 'resendConfirmation'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
-Route::post('/api/auth/logout',   [AuthController::class, 'logout']);
-Route::get('/api/auth/me', [AuthController::class, 'me'])
-    ->middleware('auth:sanctum');
-    Route::get('/api/auth/me', [AuthController::class, 'me'])
-    ->middleware('auth:sanctum');
+Route::post('/api/auth/login', [AuthController::class, 'login'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+Route::post('/api/auth/register', [AuthController::class, 'register'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+Route::post('/api/auth/forgot-password', [AuthController::class, 'forgotPassword'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+Route::post('/api/auth/reset-password', [AuthController::class, 'resetPassword'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+Route::post('/api/auth/resend-confirmation', [AuthController::class, 'resendConfirmation'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+Route::post('/api/auth/logout', [AuthController::class, 'logout']);
 
-Route::put('/api/auth/profile', [AuthController::class, 'updateProfile'])
-    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
-    ->middleware('auth:sanctum');
-
-Route::post('/api/auth/change-password', [AuthController::class, 'changePassword'])
-    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
-    ->middleware('auth:sanctum');
-
-Route::delete('/api/auth/account', [AuthController::class, 'deleteAccount'])
-    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
-    ->middleware('auth:sanctum');
-
-Route::middleware('auth:sanctum')->group(function () {
-    // ... route yang sudah ada ...
+// ── AUTH API (PROTECTED) ──────────────────────
+Route::middleware('auth:sanctum')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->group(function () {
+    Route::get('/api/auth/me', [AuthController::class, 'me']);
     Route::put('/api/auth/profile', [AuthController::class, 'updateProfile']);
+    Route::post('/api/auth/change-password', [AuthController::class, 'changePassword']);
+    Route::delete('/api/auth/account', [AuthController::class, 'deleteAccount']);
 });
 
+// ── PRODUCTS API (PUBLIC) ─────────────────────
 Route::get('/api/products', [AuthController::class, 'getProducts']);
 
-
-// ── KONFIRMASI EMAIL (GET) ─────────────────────
+// ── KONFIRMASI EMAIL ──────────────────────────
 Route::get('/api/auth/confirm/{token}', [AuthController::class, 'confirmEmail']);
 
 // ── DASHBOARD ─────────────────────────────────
@@ -65,7 +57,7 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
-//PRODUCT
-Route::get('/products', function () {
-    return view('products');
-})->name('products');
+// ── PRODUCT PAGE ──────────────────────────────
+Route::get('/product', function () {
+    return view('product');
+})->name('product');
