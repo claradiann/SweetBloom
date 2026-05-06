@@ -32,6 +32,22 @@ Route::post('/api/auth/forgot-password', [AuthController::class, 'forgotPassword
 Route::post('/api/auth/reset-password', [AuthController::class, 'resetPassword'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 Route::post('/api/auth/resend-confirmation', [AuthController::class, 'resendConfirmation'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 Route::post('/api/auth/logout',   [AuthController::class, 'logout']);
+Route::get('/api/auth/me', [AuthController::class, 'me'])
+    ->middleware('auth:sanctum');
+    Route::get('/api/auth/me', [AuthController::class, 'me'])
+    ->middleware('auth:sanctum');
+
+Route::put('/api/auth/profile', [AuthController::class, 'updateProfile'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('auth:sanctum');
+
+Route::post('/api/auth/change-password', [AuthController::class, 'changePassword'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('auth:sanctum');
+
+Route::delete('/api/auth/account', [AuthController::class, 'deleteAccount'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('auth:sanctum');
 
 
 // ── KONFIRMASI EMAIL (GET) ─────────────────────

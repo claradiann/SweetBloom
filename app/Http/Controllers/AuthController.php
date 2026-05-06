@@ -308,4 +308,58 @@ class AuthController extends Controller
             ]);
         } catch (\Exception $e) {}
     }
+
+    // ── Update Profile ────────────────────────────────────────
+public function updateProfile(Request $request): JsonResponse
+{
+    $name = trim($request->json('name', ''));
+
+    if (!$name || strlen($name) < 2 || strlen($name) > 100) {
+        return response()->json(['success' => false, 'message' => 'Nama harus antara 2 sampai 100 karakter.'], 400);
+    }
+
+    $request->user()->update(['name' => $name]);
+
+    return response()->json(['success' => true, 'message' => 'Profil berhasil diperbarui.']);
+}
+
+// ── Change Password ───────────────────────────────────────
+public function changePassword(Request $request): JsonResponse
+{
+    $data            = $request->json()->all();
+    $currentPassword = $data['currentPassword'] ?? '';
+    $newPassword     = $data['newPassword'] ?? '';
+    $confirmPassword = $data['confirmPassword'] ?? '';
+
+    if (!$currentPassword || !$newPassword || !$confirmPassword) {
+        return response()->json(['success' => false, 'message' => 'Semua field wajib diisi.'], 400);
+    }
+    if (!Hash::check($currentPassword, $request->user()->password)) {
+        return response()->json(['success' => false, 'message' => 'Password saat ini tidak sesuai.'], 401);
+    }
+    if (strlen($newPassword) < 8) {
+        return response()->json(['success' => false, 'message' => 'Password baru minimal 8 karakter.'], 400);
+    }
+    if (!preg_match('/(?=.*[A-Za-z])(?=.*\d)/', $newPassword)) {
+        return response()->json(['success' => false, 'message' => 'Password harus mengandung huruf dan angka.'], 400);
+    }
+    if ($newPassword !== $confirmPassword) {
+        return response()->json(['success' => false, 'message' => 'Konfirmasi password tidak cocok.'], 400);
+    }
+
+    $request->user()->update(['password' => Hash::make($newPassword)]);
+
+    return response()->json(['success' => true, 'message' => 'Password berhasil diubah!']);
+}
+
+// ── Delete Account ────────────────────────────────────────
+public function deleteAccount(Request $request): JsonResponse
+{
+    $user = $request->user();
+    $user->tokens()->delete();
+    $user->delete();
+
+    return response()->json(['success' => true, 'message' => 'Akun berhasil dihapus.'])
+        ->withoutCookie('token');
+}
 }

@@ -5,9 +5,10 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
-
 class User extends Authenticatable
 {
+    use HasApiTokens; // ← INI YANG KURANG!
+
     protected $fillable = [
         'name', 'email', 'password', 'role',
         'is_confirmed', 'confirm_token', 'confirm_expires',
