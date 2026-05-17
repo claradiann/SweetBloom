@@ -57,17 +57,29 @@ class AuthController extends Controller
             return response()->json(['success' => false, 'message' => 'Email ini sudah terdaftar. Silakan login.'], 409);
         }
 
+        $confirmToken = bin2hex(random_bytes(32));
+
         User::create([
-            'name'         => $name,
-            'email'        => $email,
-            'password'     => Hash::make($password),
-            'role'         => 'customer',
-            'is_confirmed' => true,
+            'name'            => $name,
+            'email'           => $email,
+            'password'        => Hash::make($password),
+            'role'            => 'customer',
+            'is_confirmed'    => false,
+            'confirm_token'   => $confirmToken,
+            'confirm_expires' => Carbon::now()->addDay(),
         ]);
+
+        $confirmUrl = url('/api/auth/confirm/' . $confirmToken);
+
+        try {
+            Mail::to($email)->send(new ConfirmationMail($name, $confirmUrl));
+        } catch (\Exception $e) {
+            \Log::error('Gagal kirim email konfirmasi: ' . $e->getMessage());
+        }
 
         return response()->json([
             'success' => true,
-            'message' => 'Registrasi berhasil! Silakan login.',
+            'message' => 'Registrasi berhasil! Cek email kamu untuk konfirmasi akun. 📧',
         ], 201);
     }
 

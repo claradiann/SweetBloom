@@ -10,13 +10,20 @@ class User extends Authenticatable
     use HasApiTokens; // ← INI YANG KURANG!
 
     protected $fillable = [
-    'name',
-    'email',
-    'password',
-    'phone',
-    'address',
-    'role',
-];
+        'name',
+        'email',
+        'password',
+        'phone',
+        'address',
+        'role',
+        'is_confirmed',
+        'confirm_token',
+        'confirm_expires',
+        'reset_token',
+        'reset_expires',
+        'login_attempts',
+        'locked_until',
+    ];
 
     protected $hidden = ['password', 'confirm_token', 'reset_token'];
 
